@@ -42,8 +42,6 @@ class Record:
     def get_versions(self) -> list:
         url = f"{self.base_url}srecords?all_versions=1&size=100&q=conceptrecid:{self.data['conceptrecid']}"
 
-        print(url)
-
         data = requests.get(url).json()
 
         return [Record(hit, self._zenodo) for hit in data["hits"]["hits"]]
@@ -65,14 +63,14 @@ class Record:
             ]
         return [self._row_to_version(row) for row in version_rows if len(row.select("td")) > 1]
 
-    def original_version(self):
+    def original_version(self): #TODO: check the implementation once again.
         for identifier in self.data["metadata"]["related_identifiers"]:
             if identifier["relation"] == "isSupplementTo":
                 return re.match(r".*/tree/(.*$)", identifier["identifier"]).group(1)
         return None
 
     def __str__(self):
-        return str(self.data)
+        return str(self.data) # TODO: pretty print? Format the json to more readable version.
 
     def download(self, root="./"):
         _root = Path(root)
@@ -161,6 +159,8 @@ class Zenodo:
         url = self.base_url + "records/" + recid
 
         return Record(requests.get(url).json(), self)
+
+    #TODO: can also add get record by user? Will that be useful by any means? 
 
     def _get_records(self, params: dict[str, str]) -> list[Record]:
         url = self.base_url + "records?" + urlencode(params)
