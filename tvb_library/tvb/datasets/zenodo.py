@@ -6,6 +6,8 @@ import re
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from urllib.parse import urlencode
+from pathlib import Path
+from .utils import download_file
 
 BASE_URL = "https://zenodo.org/api/"
 
@@ -74,7 +76,8 @@ class Record:
 
     def download(self, root="./"):
         _root = Path(root)
-        if 'file' not in self.data:
+        print(self.data)
+        if 'files' not in self.data:
             raise AttributeError("No files to download! Please check if the id entered is correct!")
 
 
@@ -89,7 +92,7 @@ class Record:
                 continue # the file already exists at the given location and checksum also matches!
             
 
-            download_file(root= root,url= url, checksum = checksum, hash_function)
+            download_file(root= root,url= url, checksum = checksum, hash_function=hash_function)
 
 
 
